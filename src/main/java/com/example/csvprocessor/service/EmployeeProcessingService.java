@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.example.csvprocessor.model.Employee;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -95,6 +97,14 @@ public class EmployeeProcessingService {
 
                     // Identify the employee whose salary could not be calculated
                     System.err.println("Failed to process employee " + employee.getName() + ": " + e.getMessage());
+
+                    // Stop processing if any employees salary calculation failed
+                    // This prevents an incomplete set of results from being treated as successful
+                    if (failedEmployeeCount.get() > 0) {
+                        throw new SalaryProcessingException(
+                                "Salary processing failed for " + failedEmployeeCount.get() + " employees"
+                        );
+                    }
                 }
             });
         }
