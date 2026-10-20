@@ -37,6 +37,9 @@ public class EmployeeProcessingService {
         // AtomicInteger performs the increment atomically, making it safe for multiple threads
         AtomicInteger processedEmployeeCount = new AtomicInteger(0);
 
+        // Count how many employees failed to process
+        AtomicInteger failedEmployeeCount = new AtomicInteger(0);
+
         // Submit each employee salary calculation to the thread pool
         for (Employee employee : employeesToProcess) {
 
@@ -50,12 +53,14 @@ public class EmployeeProcessingService {
                     System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
 
                     // Increase the counter after a successful salary calculation
-                    // increment and return the result
                     processedEmployeeCount.incrementAndGet();
 
                 } catch (Exception e) {
-                // Identify the employee whose salary could not be calculated
-                System.err.println("Failed to process employee " + employee.getName() + ": " + e.getMessage());
+                    // Count failed salary calculations separately from successful ones
+                    failedEmployeeCount.incrementAndGet();
+
+                    // Identify the employee whose salary could not be calculated
+                    System.err.println("Failed to process employee " + employee.getName() + ": " + e.getMessage());
                 }
             });
         }
@@ -73,9 +78,11 @@ public class EmployeeProcessingService {
                 throw new SalaryProcessingException("Salary processing timed out");
             }
 
-            // Read the thread safe counter after processing has finished
             // Only employees whose salary calculations completed successfully are counted
             System.out.println("Successfully processed employees: " + processedEmployeeCount.get());
+
+            // failure employee are counted
+            System.out.println("Failed employees: " + failedEmployeeCount.get());
 
         } catch (InterruptedException e) {
             // Restore the interrupted status so other parts of the application
