@@ -131,4 +131,26 @@ public class SalaryCalculationServiceTest {
         // Check the expected salary
         assertEquals(56000.0, newSalary, 0.000001);
     }
+
+    @Test
+    void shouldNotIncreaseSalaryWhenProjectCompletionIsBelow60Percent() {
+
+        // Arrange: Create an employee with 50% project completion
+        Employee employee = new Employee(
+                1,
+                "Alice",
+                50000.0,
+                LocalDate.of(2020, 1, 1),
+                "Employee",
+                0.5
+        );
+
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Act: Calculate the employee's updated salary
+        double newSalary = salaryService.calculateNewSalary(employee);
+
+        // Assert: Salary should remain unchanged
+        assertEquals(50000.0, newSalary);
+    }
 }
