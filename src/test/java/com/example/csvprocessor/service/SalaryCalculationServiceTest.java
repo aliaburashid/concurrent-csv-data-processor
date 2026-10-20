@@ -59,4 +59,19 @@ public class SalaryCalculationServiceTest {
         // Directors should receive a 5% role-based increase
         assertEquals(0.05, salaryService.getRoleIncrease(employee));
     }
+
+    // Test valid role percentages
+    @Test
+    void shouldReturnCorrectIncreaseForManager() {
+
+        // Create an employee with the Manager role
+        Employee employee = new Employee();
+        employee.setRole("Manager");
+
+        // Create salary calculation service
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Managers should receive a 2% role-based increase
+        assertEquals(0.02, salaryService.getRoleIncrease(employee));
+    }
 }
