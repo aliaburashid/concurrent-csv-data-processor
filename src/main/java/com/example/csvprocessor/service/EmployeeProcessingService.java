@@ -22,9 +22,11 @@ public class EmployeeProcessingService {
 
     // service responsible for reading employees from the CSV file
     private final CsvReaderService employeeCsvReader;
-
     // Service responsible for calculating employee salary increases
     private final SalaryCalculationService employeeSalaryCalculator;
+    // Service responsible for exporting updated employee salaries to a CSV file
+    private final CsvWriterService csvWriterService;
+
 
     public void calculateEmployeeSalariesConcurrently() throws IOException {
 
@@ -77,6 +79,7 @@ public class EmployeeProcessingService {
                         // Store the employees updated salary for CSV export
                         updatedEmployeeRecords.add(employee.getId() + "," +
                                         employee.getName() + "," +
+                                        employee.getSalary() + "," +
                                         updatedSalary
                         );
 
@@ -92,19 +95,15 @@ public class EmployeeProcessingService {
                     processedEmployeeCount.incrementAndGet();
 
                 } catch (Exception e) {
-                    // Count failed salary calculations separately from successful ones
+
+                    // Count failed salary calculations separately from successful ones.
                     failedEmployeeCount.incrementAndGet();
 
-                    // Identify the employee whose salary could not be calculated
-                    System.err.println("Failed to process employee " + employee.getName() + ": " + e.getMessage());
-
-                    // Stop processing if any employees salary calculation failed
-                    // This prevents an incomplete set of results from being treated as successful
-                    if (failedEmployeeCount.get() > 0) {
-                        throw new SalaryProcessingException(
-                                "Salary processing failed for " + failedEmployeeCount.get() + " employees"
-                        );
-                    }
+                    // Identify the employee whose salary calculation failed.
+                    System.err.println(
+                            "Failed to process employee " + employee.getName()
+                                    + ": " + e.getMessage()
+                    );
                 }
             });
         }
@@ -127,6 +126,19 @@ public class EmployeeProcessingService {
 
             // failure employee are counted
             System.out.println("Failed employees: " + failedEmployeeCount.get());
+
+            // Prevent exporting incomplete results if any employee calculation failed
+            if (failedEmployeeCount.get() > 0) {
+                throw new SalaryProcessingException(
+                        "Salary processing failed for "
+                                + failedEmployeeCount.get() + " employees"
+                );
+            }
+
+            // Export the CSV only after all worker threads finish successfully
+            csvWriterService.writeUpdatedSalaries(updatedEmployeeRecords);
+
+            System.out.println("Updated employee salaries exported successfully!");
 
         } catch (InterruptedException e) {
             // Restore the interrupted status so other parts of the application
