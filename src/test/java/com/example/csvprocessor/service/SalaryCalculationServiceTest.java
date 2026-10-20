@@ -1,4 +1,46 @@
 package com.example.csvprocessor.service;
 
+import com.example.csvprocessor.model.Employee;
+import com.example.csvprocessor.exception.InvalidEmployeeRoleException;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class SalaryCalculationServiceTest {
+
+    // Test invalid employee
+    @Test
+    void shouldThrowExceptionForInvalidRole() {
+
+        // Create an employee with an invalid role
+        Employee employee = new Employee();
+        employee.setRole("Doctor");
+
+        // Create salary calculation service
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Verify that custom exception is thrown
+        assertThrows(InvalidEmployeeRoleException.class, () -> {
+            // Calls the method and checks the employee role
+            salaryService.getRoleIncrease(employee);
+        });
+    }
+
+    // Test null and blank roles
+    @Test
+    void shouldThrowExceptionForMissingRole() {
+
+        // Create an employee without a role
+        Employee employee = new Employee();
+        employee.setRole(null);
+
+        // Create salary calculation service
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Check that a missing role throws our custom exception
+        assertThrows(InvalidEmployeeRoleException.class, () -> {
+            salaryService.getRoleIncrease(employee);
+        });
+    }
 }
