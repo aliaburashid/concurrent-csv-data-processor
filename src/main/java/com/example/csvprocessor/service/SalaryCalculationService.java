@@ -65,12 +65,26 @@ public class SalaryCalculationService {
             throw new InvalidJoiningDateException("Joining date cannot be in the future");
         }
 
-        // Calculate the number of completed years
-        //  Period.between(joinedDate, today): calculates the difference between two dates in years, months and days
+        // Number of completed years
+        // Period.between(joinedDate, today): calculates the difference between two dates in years, months and days
         // .getYears() extracts the number of completed years
         int yearsOfService = Period.between(joinedDate, today).getYears();
 
         // Each completed year adds 2% to the salary increase
         return yearsOfService * 0.02;
+    }
+
+
+    // Get the performance bonus multiplier based on project completion
+    public double getPerformanceBonusMultiplier(Employee employee) {
+
+        // Employees above 80% completion receive a 1.5x multiplier
+        if (employee.getProjectCompletion() > 0.8) {
+            // increase salary by 50%
+            return 1.5;
+        }
+
+        // Otherwise, the salary increase remains unchanged
+        return 1.0;
     }
 }
