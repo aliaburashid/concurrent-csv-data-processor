@@ -42,15 +42,21 @@ public class EmployeeProcessingService {
 
             salaryThreadPool.execute(() -> {
 
-                // Calculate the employees new salary
-                double updatedSalary = employeeSalaryCalculator.calculateNewSalary(employee);
+                try {
+                    // Calculate the employees new salary
+                    double updatedSalary = employeeSalaryCalculator.calculateNewSalary(employee);
 
-                // Display the result
-                System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
+                    // Display the result
+                    System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
 
-                // Increase the counter after a successful salary calculation
-                // increment and return the result
-                processedEmployeeCount.incrementAndGet();
+                    // Increase the counter after a successful salary calculation
+                    // increment and return the result
+                    processedEmployeeCount.incrementAndGet();
+
+                } catch (Exception e) {
+                // Identify the employee whose salary could not be calculated
+                System.err.println("Failed to process employee " + employee.getName() + ": " + e.getMessage());
+                }
             });
         }
 
