@@ -13,7 +13,7 @@ public class CsvWriterService {
 
         // Create an output CSV file and automatically close it when finished
         try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter("updated_employees.csv"))) {
+                new FileWriter("src/main/resources/updated_employees.csv"))) {
 
             // Write column names before the employee records.
             writer.write("id,name,originalSalary,updatedSalary");

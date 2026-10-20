@@ -102,7 +102,7 @@ public class SalaryCalculationService {
         double roleIncrease = getRoleIncrease(employee);
         double yearsIncrease = getYearsOfServiceIncrease(employee);
 
-        / // Add the percentages
+        // Add the percentages
         double totalIncrease = roleIncrease + yearsIncrease;
 
         // Apply the performance bonus multiplier
