@@ -8,6 +8,8 @@ import java.util.List;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 @Service
 // for fields declared final
@@ -29,23 +31,17 @@ public class EmployeeProcessingService {
         // Create a thread pool containing 4 worker threads
         ExecutorService salaryThreadPool = Executors.newFixedThreadPool(4);
 
-        // Submit each employee as a separate task
-        // go through each employee in the list
+        // Submit each employee salary calculation to the thread pool
         for (Employee employee : employeesToProcess) {
 
-            // send a task to the worker thread
-            salaryThreadPool.submit(() -> {
+            salaryThreadPool.execute(() -> {
 
-                // Calculate the new salary
+                // Calculate the employees new salary
                 double updatedSalary = employeeSalaryCalculator.calculateNewSalary(employee);
 
-                // Print the result
+                // Display the result
                 System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
             });
-        }
-
-
-
 
         // Stop accepting new tasks after submitted tasks finish
         salaryThreadPool.shutdown();
