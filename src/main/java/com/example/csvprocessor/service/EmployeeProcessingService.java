@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 // for fields declared final
@@ -35,10 +36,28 @@ public class EmployeeProcessingService {
         // Count how many employees have been processed successfully
         // why not a normal counter? because Multiple threads can interfere with one another, causing some increments to be lost
         // AtomicInteger performs the increment atomically, making it safe for multiple threads
+
+        // example: Imagine our counter is currently 5.
+        // Two threads finish calculating salaries at almost the same time.
+        // With a normal int:
+        // Thread 1	                         Thread 2
+        // Reads counter = 5	        Reads counter = 5
+        // Calculates 5 + 1	            Calculates 5 + 1
+        // Writes 6	                    Writes 6
+        // Final counter = 6 (incorrect!)
+        // But two employees actually finished, so the counter should be 7.
+        // With AtomicInteger: Final counter = 7 (correct!)
+        // Each increment happens atomically, so no updates are lost.
         AtomicInteger processedEmployeeCount = new AtomicInteger(0);
 
         // Count how many employees failed to process
         AtomicInteger failedEmployeeCount = new AtomicInteger(0);
+
+        // Store updated employee records for the final CSV report
+        List<String> updatedEmployeeRecords = new ArrayList<>();
+
+        // Protect the shared results list from concurrent modifications
+        ReentrantLock salaryResultsLock = new ReentrantLock();
 
         // Submit each employee salary calculation to the thread pool
         for (Employee employee : employeesToProcess) {
@@ -48,6 +67,21 @@ public class EmployeeProcessingService {
                 try {
                     // Calculate the employees new salary
                     double updatedSalary = employeeSalaryCalculator.calculateNewSalary(employee);
+
+                    // Acquire the lock before modifying the shared results list
+                    salaryResultsLock.lock();
+
+                    try {
+                        // Store the employees updated salary for CSV export
+                        updatedEmployeeRecords.add(employee.getId() + "," +
+                                        employee.getName() + "," +
+                                        updatedSalary
+                        );
+
+                    } finally {
+                        // Always release the lock so another thread can access the list
+                        salaryResultsLock.unlock();
+                    }
 
                     // Display the result
                     System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
