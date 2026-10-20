@@ -110,4 +110,25 @@ public class SalaryCalculationServiceTest {
         // delta is a small tolerance for comparing double values
         assertEquals(0.06, salaryService.getYearsOfServiceIncrease(employee), 0.000001);
     }
+
+    // Test the final salary calculation
+    @Test
+    void shouldCalculateFinalSalaryCorrectly() {
+
+        // Create an employee
+        Employee employee = new Employee();
+
+        employee.setSalary(50000.0);
+        employee.setRole("Manager");
+        employee.setJoinedDate(LocalDate.now().minusYears(3));
+        employee.setProjectCompletion(0.9);
+
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Calculate the final salary
+        double newSalary = salaryService.calculateNewSalary(employee);
+
+        // Check the expected salary
+        assertEquals(56000.0, newSalary, 0.000001);
+    }
 }
