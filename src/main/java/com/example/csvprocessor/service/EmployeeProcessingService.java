@@ -17,6 +17,9 @@ public class EmployeeProcessingService {
     // service responsible for reading employees from the CSV file
     private final CsvReaderService employeeCsvReader;
 
+    // Service responsible for calculating employee salary increases
+    private final SalaryCalculationService employeeSalaryCalculator;
+
     public void calculateEmployeeSalariesConcurrently() throws IOException {
 
         // Read all employees from the CSV file
