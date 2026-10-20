@@ -1,5 +1,6 @@
 package com.example.csvprocessor.service;
 
+import com.example.csvprocessor.exception.SalaryProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -50,8 +52,31 @@ public class EmployeeProcessingService {
                 // increment and return the result
                 processedEmployeeCount.incrementAndGet();
             });
+        }
 
         // Stop accepting new tasks after submitted tasks finish
         salaryThreadPool.shutdown();
+
+        try {
+            // Wait up to 1 minute for all submitted salary calculation tasks to finish
+            // shutdown() stops new tasks from being accepted but does not wait for completion
+            boolean allTasksFinished = salaryThreadPool.awaitTermination(1, TimeUnit.MINUTES);
+
+            // Prevent reporting incomplete results if some threads are still running
+            if (!allTasksFinished) {
+                throw new SalaryProcessingException("Salary processing timed out");
+            }
+
+            // Read the thread safe counter after processing has finished
+            // Only employees whose salary calculations completed successfully are counted
+            System.out.println("Successfully processed employees: " + processedEmployeeCount.get());
+
+        } catch (InterruptedException e) {
+            // Restore the interrupted status so other parts of the application
+            // can detect that this thread was interrupted
+            Thread.currentThread().interrupt();
+            // reports that salary processing could not finish normally
+            throw new SalaryProcessingException("Salary processing was interrupted");
+        }
     }
 }
