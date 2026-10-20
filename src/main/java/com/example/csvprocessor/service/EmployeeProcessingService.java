@@ -8,8 +8,7 @@ import java.util.List;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.ArrayList;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 // for fields declared final
@@ -31,6 +30,11 @@ public class EmployeeProcessingService {
         // Create a thread pool containing 4 worker threads
         ExecutorService salaryThreadPool = Executors.newFixedThreadPool(4);
 
+        // Count how many employees have been processed successfully
+        // why not a normal counter? because Multiple threads can interfere with one another, causing some increments to be lost
+        // AtomicInteger performs the increment atomically, making it safe for multiple threads
+        AtomicInteger processedEmployeeCount = new AtomicInteger(0);
+
         // Submit each employee salary calculation to the thread pool
         for (Employee employee : employeesToProcess) {
 
@@ -41,6 +45,10 @@ public class EmployeeProcessingService {
 
                 // Display the result
                 System.out.println(employee.getName() + " - New Salary: " + updatedSalary);
+
+                // Increase the counter after a successful salary calculation
+                // increment and return the result
+                processedEmployeeCount.incrementAndGet();
             });
 
         // Stop accepting new tasks after submitted tasks finish
