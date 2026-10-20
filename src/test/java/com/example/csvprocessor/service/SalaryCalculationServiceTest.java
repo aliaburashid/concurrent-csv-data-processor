@@ -5,6 +5,7 @@ import com.example.csvprocessor.exception.InvalidEmployeeRoleException;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SalaryCalculationServiceTest {
@@ -42,5 +43,20 @@ public class SalaryCalculationServiceTest {
         assertThrows(InvalidEmployeeRoleException.class, () -> {
             salaryService.getRoleIncrease(employee);
         });
+    }
+
+    // Test valid role percentages
+    @Test
+    void shouldReturnCorrectIncreaseForDirector() {
+
+        // Create an employee with the Director role
+        Employee employee = new Employee();
+        employee.setRole("Director");
+
+        // Create salary calculation service
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // Directors should receive a 5% role-based increase
+        assertEquals(0.05, salaryService.getRoleIncrease(employee));
     }
 }
