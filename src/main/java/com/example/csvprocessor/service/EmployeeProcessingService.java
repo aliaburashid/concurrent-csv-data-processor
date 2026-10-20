@@ -135,6 +135,17 @@ public class EmployeeProcessingService {
                 );
             }
 
+            // Sort employee records by ID to restore their original order
+            // after concurrent salary processing
+            updatedEmployeeRecords.sort(
+                    (record1, record2) -> {
+                        int id1 = Integer.parseInt(record1.split(",")[0]);
+                        int id2 = Integer.parseInt(record2.split(",")[0]);
+
+                        return Integer.compare(id1, id2);
+                    }
+            );
+
             // Export the CSV only after all worker threads finish successfully
             csvWriterService.writeUpdatedSalaries(updatedEmployeeRecords);
 
