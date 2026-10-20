@@ -2,7 +2,10 @@ package com.example.csvprocessor.service;
 
 import com.example.csvprocessor.model.Employee;
 import org.springframework.stereotype.Service;
+
 import com.example.csvprocessor.exception.InvalidEmployeeRoleException;
+import com.example.csvprocessor.exception.InvalidJoiningDateException;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -51,6 +54,16 @@ public class SalaryCalculationService {
 
         // Get today's date
         LocalDate today = LocalDate.now();
+
+        // Check if the joining date is missing
+        if (joinedDate == null) {
+            throw new InvalidJoiningDateException("Joining date cannot be null");
+        }
+
+        // Check if the joining date is in the future
+        if (joinedDate.isAfter(today)) {
+            throw new InvalidJoiningDateException("Joining date cannot be in the future");
+        }
 
         // Calculate the number of completed years
         //  Period.between(joinedDate, today): calculates the difference between two dates in years, months and days
