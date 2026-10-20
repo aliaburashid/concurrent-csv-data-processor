@@ -1,4 +1,9 @@
 package com.example.csvprocessor.exception;
 
-public class InvalidEmployeeRoleException {
+// Custom exception for invalid employee roles
+public class InvalidEmployeeRoleException extends RuntimeException {
+
+    public InvalidEmployeeRoleException(String message) {
+        super(message);
+    }
 }
