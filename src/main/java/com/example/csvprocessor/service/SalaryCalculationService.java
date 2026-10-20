@@ -87,4 +87,34 @@ public class SalaryCalculationService {
         // Otherwise, the salary increase remains unchanged
         return 1.0;
     }
+
+
+    // Calculate the employees final salary after applying all raise rules
+    public double calculateNewSalary(Employee employee) {
+
+        // Employees below 60% completion receive no salary increase
+        if (!isEligibleForRaise(employee)) {
+            // return their original salary immediately
+            return employee.getSalary();
+        }
+
+        // Calculate salary increase percentages
+        double roleIncrease = getRoleIncrease(employee);
+        double yearsIncrease = getYearsOfServiceIncrease(employee);
+
+        / // Add the percentages
+        double totalIncrease = roleIncrease + yearsIncrease;
+
+        // Apply the performance bonus multiplier
+        double bonusMultiplier = getPerformanceBonusMultiplier(employee);
+        totalIncrease = totalIncrease * bonusMultiplier;
+
+        // Calculate how much money to add
+        double increaseAmount = employee.getSalary() * totalIncrease;
+
+        // Calculate the final salary
+        double newSalary = employee.getSalary() + increaseAmount;
+
+        return newSalary;
+    }
 }
