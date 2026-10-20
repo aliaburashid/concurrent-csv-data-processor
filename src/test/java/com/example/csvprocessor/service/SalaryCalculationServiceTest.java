@@ -5,6 +5,8 @@ import com.example.csvprocessor.exception.InvalidEmployeeRoleException;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -88,5 +90,24 @@ public class SalaryCalculationServiceTest {
 
         // Employees should receive a 1% role-based increase
         assertEquals(0.01, salaryService.getRoleIncrease(employee));
+    }
+
+    // Test years of service
+    @Test
+    void shouldCalculateYearsOfServiceIncrease() {
+
+        // Create an employee
+        Employee employee = new Employee();
+
+        // Employee joined exactly 3 years ago
+        // creates a joining date exactly three years before today
+        employee.setJoinedDate(LocalDate.now().minusYears(3));
+
+        // Create salary calculation service
+        SalaryCalculationService salaryService = new SalaryCalculationService();
+
+        // 3 completed years × 2% = 6%
+        // delta is a small tolerance for comparing double values
+        assertEquals(0.06, salaryService.getYearsOfServiceIncrease(employee), 0.000001);
     }
 }

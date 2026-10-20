@@ -3,6 +3,8 @@ package com.example.csvprocessor.service;
 import com.example.csvprocessor.model.Employee;
 import org.springframework.stereotype.Service;
 import com.example.csvprocessor.exception.InvalidEmployeeRoleException;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 public class SalaryCalculationService {
@@ -39,5 +41,23 @@ public class SalaryCalculationService {
 
         // Reject any role that is not supported
         throw new InvalidEmployeeRoleException("Invalid employee role: " + role);
+    }
+
+    // Calculate salary increase based on completed years of service
+    public double getYearsOfServiceIncrease(Employee employee) {
+
+        // Get the date when the employee joined
+        LocalDate joinedDate = employee.getJoinedDate();
+
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Calculate the number of completed years
+        //  Period.between(joinedDate, today): calculates the difference between two dates in years, months and days
+        // .getYears() extracts the number of completed years
+        int yearsOfService = Period.between(joinedDate, today).getYears();
+
+        // Each completed year adds 2% to the salary increase
+        return yearsOfService * 0.02;
     }
 }
