@@ -4,6 +4,24 @@ A Java and Spring Boot application that processes employee salary adjustments **
 
 The project demonstrates Java multithreading, thread pooling, thread-safe shared state, file handling, exception handling, and automated testing.
 
+## How to View the Frontend
+
+The React dashboard lets you explore employee salaries, compare before-and-after results, and try the salary simulator.
+
+With **Node.js 22.12+ (or 20.19+)** and **npm** installed, run these commands from the project root:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open **[http://127.0.0.1:5173](http://127.0.0.1:5173)** in your browser. If that port is already in use, open the Local URL printed in the terminal instead. Keep the terminal running while using the dashboard; press `Ctrl+C` to stop it.
+
+The frontend runs independently of Spring Boot and loads a bundled snapshot of the project's CSV data. To view results from a new backend run, choose **Import data** or **Manage** and select the matching `employees.csv` and `updated_employees.csv` files from `src/main/resources/`.
+
+See the [frontend README](frontend/README.md) for more setup, build, and usage details.
+
 ## Tech Stack
 
 | Technology | Purpose |
